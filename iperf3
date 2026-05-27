@@ -1,0 +1,7 @@
+services:
+  iperf3-server:
+    image: networkstatic/iperf3
+    container_name: iperf3-server
+    ports:
+      - 5201:5201
+    command: -s
