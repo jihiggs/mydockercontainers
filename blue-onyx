@@ -1,0 +1,40 @@
+networks:
+  blue-onyx-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.105.0/24
+services:
+  blue-onyx:
+    networks:
+      blue-onyx-net:
+        ipv4_address: 172.20.105.10
+    image: ghcr.io/xnorpx/blue_onyx:latest
+    container_name: blue-onyx
+    ports:
+      - 32167:32168
+    volumes:
+      - /dockermp/blueonyx/models:/app/models
+      - /dockermp/blueonyx/config:/app/config
+      - /dockermp/blueonyx/logs:/app/logs
+    #      - /dockermp/blueonyx/processed_images:/app/processed_images
+    environment:
+      - RUST_LOG=info
+      - TZ=America/Chicago
+    command: >
+      --port 32168 --request-timeout 30 --worker-queue-size 50 --log-level info
+      --log-path /app/logs/  --save-stats-path /app/logs/ --intra-threads 10
+      --inter-threads 10
+    # --save-image-path /app/processed_images
+    restart: unless-stopped
+
+#    healthcheck:
+#      test:
+#        - CMD
+#        - curl
+#        - -f
+#        - http://localhost:32168/
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 40s
